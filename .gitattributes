@@ -1,0 +1,7 @@
+[attr]unityyaml -text merge=unityyamlmerge diff
+
+# Unity Text Assets
+*.meta unityyaml
+*.unity unityyaml
+*.asset unityyaml
+*.prefab unityyaml
