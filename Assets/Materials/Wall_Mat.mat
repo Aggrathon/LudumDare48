@@ -79,12 +79,14 @@ Material:
     m_Floats:
     - Cutoff: 0.52
     - Density: 4
-    - Height: 0.5
+    - Height: 1
     - Noise: 0.25
-    - NoiseScale: 84.9
+    - NoiseScale: 64.8
+    - Saturation: 0.381
     - Smoothness: 0.3
+    - Value: 0.187
     - _AlphaClip: 0
-    - _Blend: 0
+    - _Blend: 0.48
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
@@ -112,7 +114,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.764151, g: 0.74362135, b: 0.7317106, a: 1}
+    - _Color: {r: 0.4339623, g: 0.39496347, b: 0.36641157, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
