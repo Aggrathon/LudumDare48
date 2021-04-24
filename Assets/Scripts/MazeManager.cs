@@ -22,6 +22,9 @@ public class MazeManager : MonoBehaviour
     public List<PrefabProbability> prefabsSpaceU;
     public List<PrefabProbability> prefabsSpaceEnclosed;
 
+    public List<RectInt> reservedSpace;
+    public List<RectInt> reservedWall;
+
 
     private List<List<PrefabProbability>> mazePrefabs;
     protected List<List<PrefabProbability>> MazePrefabs
@@ -87,13 +90,20 @@ public class MazeManager : MonoBehaviour
 
 
     [ContextMenu("Generate Maze")]
-    void GenerateDefaultMaze()
+    void GenerateMaze()
     {
         NormalisePrefabProbabilities();
         MazeGenerator gen = new MazeGenerator(width, height);
         int midX = width / 2;
         int midY = height / 2;
-        gen.OpenSpace(midX - 2, midX + 2, midY - 2, midY + 2);
+        foreach (RectInt r in reservedSpace)
+        {
+            gen.OpenSpace(r);
+        }
+        foreach (RectInt r in reservedWall)
+        {
+            gen.ForceWall(r);
+        }
         gen.Generate();
         SpawnMaze(gen);
     }
@@ -157,6 +167,17 @@ public class MazeManager : MonoBehaviour
     {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(Vector3.zero, new Vector3(width, 0, height));
+        float offsetX = -width / 2;
+        float offsetY = -height / 2;
+        foreach (RectInt r in reservedSpace)
+        {
+            Gizmos.DrawWireCube(new Vector3(r.x + offsetX, 0, r.y + offsetY), new Vector3(r.width, 0, r.height));
+        }
+        Gizmos.color = Color.red;
+        foreach (RectInt r in reservedWall)
+        {
+            Gizmos.DrawWireCube(new Vector3(r.x + offsetX, 0, r.y + offsetY), new Vector3(r.width, 0, r.height));
+        }
     }
 
 

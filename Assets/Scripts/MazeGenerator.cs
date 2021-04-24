@@ -51,6 +51,36 @@ public class MazeGenerator
         num_sets++;
     }
 
+    public void OpenSpace(RectInt r)
+    {
+        OpenSpace(
+            Mathf.Max(r.x - r.width / 2, 0),
+            Mathf.Min(r.x + r.width / 2, maze.GetLength(0) - 1),
+            Mathf.Max(r.y - r.height / 2, 0),
+            Mathf.Min(r.y + r.height / 2, maze.GetLength(1) - 1)
+        );
+    }
+
+    public void ForceWall(int x, int y)
+    {
+        maze[x, y] = -1;
+    }
+
+    public void ForceWall(RectInt r)
+    {
+        int minX = Mathf.Max(r.x - r.width / 2, 0);
+        int maxX = Mathf.Min(r.x + r.width / 2, maze.GetLength(0) - 1);
+        int minY = Mathf.Max(r.y - r.height / 2, 0);
+        int maxY = Mathf.Min(r.y + r.height / 2, maze.GetLength(1) - 1);
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                ForceWall(x, y);
+            }
+        }
+    }
+
     public void Generate()
     {
         // This is a slow and naive implementation of Kruskals algorithm
@@ -60,9 +90,9 @@ public class MazeGenerator
         {
             for (int y = 0; y < maze.GetLength(1); y++)
             {
-                if ((x % 2 == 0) && (y % 2 == 0))
+                if ((x % 2 == 0) && (y % 2 == 0) && maze[x, y] == 0)
                     OpenSpace(x, y);
-                else if ((x % 2 == 0) || (y % 2 == 0))
+                else if (((x % 2 == 0) || (y % 2 == 0)) && maze[x, y] == 0)
                     unvisited.Add((x, y));
             }
         }
@@ -76,15 +106,15 @@ public class MazeGenerator
     public (CellShape, float) GetCell(int x, int y)
     {
         int walls = 0;
-        if (GetLeft(x, y).Item3 == 0)
+        if (GetLeft(x, y).Item3 <= 0)
             walls += 1;
-        if (GetRight(x, y).Item3 == 0)
+        if (GetRight(x, y).Item3 <= 0)
             walls += 2;
-        if (GetUp(x, y).Item3 == 0)
+        if (GetUp(x, y).Item3 <= 0)
             walls += 4;
-        if (GetDown(x, y).Item3 == 0)
+        if (GetDown(x, y).Item3 <= 0)
             walls += 8;
-        if (maze[x, y] == 0)
+        if (maze[x, y] <= 0)
         {
             return walls switch
             {
@@ -144,7 +174,7 @@ public class MazeGenerator
 
     void KruskalCarve(int x, int y)
     {
-        if (maze[x, y] != 0)
+        if (maze[x, y] > 0)
         {
             return;
         }
@@ -152,7 +182,7 @@ public class MazeGenerator
         int right = GetRight(x, y).Item3;
         int up = GetUp(x, y).Item3;
         int down = GetDown(x, y).Item3;
-        if (left != 0)
+        if (left > 0)
         {
             if (left == right)
                 return;
@@ -161,14 +191,14 @@ public class MazeGenerator
             if (left == down)
                 return;
         }
-        if (right != 0)
+        if (right > 0)
         {
             if (right == up)
                 return;
             if (right == down)
                 return;
         }
-        if (up != 0 & up == down)
+        if (up > 0 & up == down)
             return;
         FloodFill((x, y), num_sets);
         num_sets++;
@@ -184,7 +214,7 @@ public class MazeGenerator
             maze[x, y] = set;
             foreach ((int x2, int y2, int m) in GetNeighbours(x, y))
             {
-                if (m == 0 | m == set)
+                if (m <= 0 | m == set)
                     continue;
                 if (m < set)
                 {
@@ -205,25 +235,25 @@ public class MazeGenerator
     (int, int, int) GetLeft(int x, int y)
     {
         if (x == 0)
-            return (0, y, 0);
+            return (0, y, -1);
         return (x - 1, y, maze[x - 1, y]);
     }
     (int, int, int) GetRight(int x, int y)
     {
         if (maze.GetLength(0) == x + 1)
-            return (x, y, 0);
+            return (x, y, -1);
         return (x + 1, y, maze[x + 1, y]);
     }
     (int, int, int) GetUp(int x, int y)
     {
         if (y == 0)
-            return (x, 0, 0);
+            return (x, 0, -1);
         return (x, y - 1, maze[x, y - 1]);
     }
     (int, int, int) GetDown(int x, int y)
     {
         if (maze.GetLength(1) == y + 1)
-            return (x, y, 0);
+            return (x, y, -1);
         return (x, y + 1, maze[x, y + 1]);
     }
     IEnumerable<(int, int, int)> GetNeighbours(int x, int y)
