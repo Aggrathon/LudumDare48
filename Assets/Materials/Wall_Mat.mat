@@ -78,7 +78,7 @@ Material:
     m_Ints: []
     m_Floats:
     - Cutoff: 0.52
-    - Density: 7
+    - Density: 4
     - Height: 0.5
     - Noise: 0.25
     - NoiseScale: 84.9
