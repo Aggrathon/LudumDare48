@@ -8,80 +8,42 @@ public class MazeManager : MonoBehaviour
     public int width = 21;
     public int height = 21;
 
-    public List<PrefabProbability> prefabsSolid;
-    public List<PrefabProbability> prefabsWallLeft;
-    public List<PrefabProbability> prefabsWallRight;
-    public List<PrefabProbability> prefabsWallLeftRight;
-    public List<PrefabProbability> prefabsWallTop;
-    public List<PrefabProbability> prefabsWallLeftTop;
-    public List<PrefabProbability> prefabsWallRightTop;
-    public List<PrefabProbability> prefabsWallLeftRightTop;
-    public List<PrefabProbability> prefabsWallBottom;
-    public List<PrefabProbability> prefabsWallLeftBottom;
-    public List<PrefabProbability> prefabsWallRightBottom;
-    public List<PrefabProbability> prefabsWallLeftRightBottom;
-    public List<PrefabProbability> prefabsWallTopBottom;
-    public List<PrefabProbability> prefabsWallLeftTopBottom;
-    public List<PrefabProbability> prefabsWallRightTopBottom;
-    public List<PrefabProbability> prefabsWallLeftRightTopBottom;
+
+    public List<PrefabProbability> prefabsWallEnd;
+    public List<PrefabProbability> prefabsWallStraight;
+    public List<PrefabProbability> prefabsWallTurn;
+    public List<PrefabProbability> prefabsWallT;
+    public List<PrefabProbability> prefabsWallCross;
+    public List<PrefabProbability> prefabsWallAlone;
     public List<PrefabProbability> prefabsSpace;
-    public List<PrefabProbability> prefabsSpaceLeft;
-    public List<PrefabProbability> prefabsSpaceRight;
-    public List<PrefabProbability> prefabsSpaceLeftRight;
-    public List<PrefabProbability> prefabsSpaceTop;
-    public List<PrefabProbability> prefabsSpaceLeftTop;
-    public List<PrefabProbability> prefabsSpaceRightTop;
-    public List<PrefabProbability> prefabsSpaceLeftRightTop;
-    public List<PrefabProbability> prefabsSpaceBottom;
-    public List<PrefabProbability> prefabsSpaceLeftBottom;
-    public List<PrefabProbability> prefabsSpaceRightBottom;
-    public List<PrefabProbability> prefabsSpaceLeftRightBottom;
-    public List<PrefabProbability> prefabsSpaceTopBottom;
-    public List<PrefabProbability> prefabsSpaceLeftTopBottom;
-    public List<PrefabProbability> prefabsSpaceRightTopBottom;
-    public List<PrefabProbability> prefabsSpaceLeftRightTopBottom;
+    public List<PrefabProbability> prefabsSpaceEnd;
+    public List<PrefabProbability> prefabsSpaceStraight;
+    public List<PrefabProbability> prefabsSpaceCorner;
+    public List<PrefabProbability> prefabsSpaceU;
+    public List<PrefabProbability> prefabsSpaceEnclosed;
+
 
     private List<List<PrefabProbability>> mazePrefabs;
     protected List<List<PrefabProbability>> MazePrefabs
     {
         get
         {
-            if (mazePrefabs == null || mazePrefabs.Count != 32)
+            if (mazePrefabs == null || mazePrefabs.Count != 12)
             {
                 mazePrefabs = new List<List<PrefabProbability>>
                 {
-                    prefabsSolid,
-                    prefabsWallLeft,
-                    prefabsWallRight,
-                    prefabsWallLeftRight,
-                    prefabsWallTop,
-                    prefabsWallLeftTop,
-                    prefabsWallRightTop,
-                    prefabsWallLeftRightTop,
-                    prefabsWallBottom,
-                    prefabsWallLeftBottom,
-                    prefabsWallRightBottom,
-                    prefabsWallLeftRightBottom,
-                    prefabsWallTopBottom,
-                    prefabsWallLeftTopBottom,
-                    prefabsWallRightTopBottom,
-                    prefabsWallLeftRightTopBottom,
+                    prefabsWallEnd,
+                    prefabsWallStraight,
+                    prefabsWallTurn,
+                    prefabsWallT,
+                    prefabsWallCross,
+                    prefabsWallAlone,
                     prefabsSpace,
-                    prefabsSpaceLeft,
-                    prefabsSpaceRight,
-                    prefabsSpaceLeftRight,
-                    prefabsSpaceTop,
-                    prefabsSpaceLeftTop,
-                    prefabsSpaceRightTop,
-                    prefabsSpaceLeftRightTop,
-                    prefabsSpaceBottom,
-                    prefabsSpaceLeftBottom,
-                    prefabsSpaceRightBottom,
-                    prefabsSpaceLeftRightBottom,
-                    prefabsSpaceTopBottom,
-                    prefabsSpaceLeftTopBottom,
-                    prefabsSpaceRightTopBottom,
-                    prefabsSpaceLeftRightTopBottom
+                    prefabsSpaceEnd,
+                    prefabsSpaceStraight,
+                    prefabsSpaceCorner,
+                    prefabsSpaceU,
+                    prefabsSpaceEnclosed
                 };
             }
             return mazePrefabs;
@@ -131,7 +93,7 @@ public class MazeManager : MonoBehaviour
         MazeGenerator gen = new MazeGenerator(width, height);
         int midX = width / 2;
         int midY = height / 2;
-        gen.OpenSpace(midX - 1, midX + 1, midY - 1, midY + 1);
+        gen.OpenSpace(midX - 2, midX + 2, midY - 2, midY + 2);
         gen.Generate();
         SpawnMaze(gen);
     }
@@ -154,7 +116,7 @@ public class MazeManager : MonoBehaviour
         float offsetX = -width / 2;
         float offsetY = -height / 2;
         var mp = MazePrefabs;
-        foreach ((int x, int y, MazeGenerator.CellShape cell) in gen.GetCells())
+        foreach ((int x, int y, MazeGenerator.CellShape cell, float rotation) in gen.GetCells())
         {
             int i = (int)cell;
             var prefabs = mp[i];
@@ -164,7 +126,7 @@ public class MazeManager : MonoBehaviour
                 if (prefabs.Count == 1)
                 {
                     if (prefabs[0].prefab)
-                        Instantiate(prefabs[0].prefab, pos, Quaternion.identity, transform);
+                        Instantiate(prefabs[0].prefab, pos, Quaternion.Euler(0, rotation, 0), transform);
                 }
                 else
                 {
@@ -178,7 +140,7 @@ public class MazeManager : MonoBehaviour
                         else
                         {
                             if (pp.prefab)
-                                Instantiate(pp.prefab, pos, Quaternion.identity, transform);
+                                Instantiate(pp.prefab, pos, Quaternion.Euler(0, rotation, 0), transform);
                             break;
                         }
                     }

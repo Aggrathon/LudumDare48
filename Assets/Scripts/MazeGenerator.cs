@@ -11,38 +11,18 @@ public class MazeGenerator
 
     public enum CellShape
     {
-        Solid = 0,
-        WallLeft = 1,
-        WallRight = 2,
-        WallLeftRight = 3,
-        WallTop = 4,
-        WallLeftTop = 5,
-        WallRightTop = 6,
-        WallLeftRightTop = 7,
-        WallBottom = 8,
-        WallLeftBottom = 9,
-        WallRightBottom = 10,
-        WallLeftRightBottom = 11,
-        WallTopBottom = 12,
-        WallLeftTopBottom = 13,
-        WallRightTopBottom = 14,
-        WallLeftRightTopBottom = 15,
-        Space = 16,
-        SpaceLeft = 16 + 1,
-        SpaceRight = 16 + 2,
-        SpaceLeftRight = 16 + 3,
-        SpaceTop = 16 + 4,
-        SpaceLeftTop = 16 + 5,
-        SpaceRightTop = 16 + 6,
-        SpaceLeftRightTop = 16 + 7,
-        SpaceBottom = 16 + 8,
-        SpaceLeftBottom = 16 + 9,
-        SpaceRightBottom = 16 + 10,
-        SpaceLeftRightBottom = 16 + 11,
-        SpaceTopBottom = 16 + 12,
-        SpaceLeftTopBottom = 16 + 13,
-        SpaceRightTopBottom = 16 + 14,
-        SpaceLeftRightTopBottom = 16 + 15,
+        WallEnd,
+        WallStraight,
+        WallTurn,
+        WallT,
+        WallCross,
+        WallAlone,
+        Space,
+        SpaceEnd,
+        SpaceStraight,
+        SpaceCorner,
+        SpaceU,
+        SpaceEnclosed
     }
 
     public MazeGenerator(int width, int height)
@@ -93,39 +73,71 @@ public class MazeGenerator
         }
     }
 
-    public CellShape GetCell(int x, int y)
+    public (CellShape, float) GetCell(int x, int y)
     {
-        int cell = 0;
-        if (maze[x, y] != 0)
+        int walls = 0;
+        if (GetLeft(x, y).Item3 == 0)
+            walls += 1;
+        if (GetRight(x, y).Item3 == 0)
+            walls += 2;
+        if (GetUp(x, y).Item3 == 0)
+            walls += 4;
+        if (GetDown(x, y).Item3 == 0)
+            walls += 8;
+        if (maze[x, y] == 0)
         {
-            cell = 16;
+            return walls switch
+            {
+                0b0001 => (CellShape.WallEnd, 0f),
+                0b0010 => (CellShape.WallEnd, 180f),
+                0b0100 => (CellShape.WallEnd, -90f),
+                0b1000 => (CellShape.WallEnd, 90f),
+                0b0101 => (CellShape.WallTurn, 0f),
+                0b0110 => (CellShape.WallTurn, -90f),
+                0b1010 => (CellShape.WallTurn, 180f),
+                0b1001 => (CellShape.WallTurn, 90f),
+                0b0011 => (CellShape.WallStraight, 0f),
+                0b1100 => (CellShape.WallStraight, 90f),
+                0b1110 => (CellShape.WallT, 0f),
+                0b1011 => (CellShape.WallT, -90f),
+                0b1101 => (CellShape.WallT, 180f),
+                0b0111 => (CellShape.WallT, 90f),
+                0b1111 => (CellShape.WallCross, 0f),
+                _ => (CellShape.WallAlone, 0f),
+            };
         }
-        if (GetLeft(x, y).Item3 != 0)
+        else
         {
-            cell += 1;
+            return walls switch
+            {
+                0b0001 => (CellShape.SpaceEnd, 0f),
+                0b0010 => (CellShape.SpaceEnd, 180f),
+                0b0100 => (CellShape.SpaceEnd, -90f),
+                0b1000 => (CellShape.SpaceEnd, 90f),
+                0b0101 => (CellShape.SpaceCorner, 0f),
+                0b0110 => (CellShape.SpaceCorner, -90f),
+                0b1010 => (CellShape.SpaceCorner, 180f),
+                0b1001 => (CellShape.SpaceCorner, 90f),
+                0b0011 => (CellShape.SpaceStraight, 0f),
+                0b1100 => (CellShape.SpaceStraight, 90f),
+                0b1110 => (CellShape.SpaceU, 0f),
+                0b1011 => (CellShape.SpaceU, -90f),
+                0b1101 => (CellShape.SpaceU, 180f),
+                0b0111 => (CellShape.SpaceU, 90f),
+                0b1111 => (CellShape.SpaceEnclosed, 0f),
+                _ => (CellShape.Space, 0f),
+            };
         }
-        if (GetRight(x, y).Item3 != 0)
-        {
-            cell += 2;
-        }
-        if (GetUp(x, y).Item3 != 0)
-        {
-            cell += 4;
-        }
-        if (GetDown(x, y).Item3 != 0)
-        {
-            cell += 8;
-        }
-        return (CellShape)cell;
     }
 
-    public IEnumerable<(int, int, CellShape)> GetCells()
+    public IEnumerable<(int, int, CellShape, float)> GetCells()
     {
         for (int x = 0; x < maze.GetLength(0); x++)
         {
             for (int y = 0; y < maze.GetLength(1); y++)
             {
-                yield return (x, y, GetCell(x, y));
+                (CellShape cell, float rot) = GetCell(x, y);
+                yield return (x, y, cell, rot);
             }
         }
     }
