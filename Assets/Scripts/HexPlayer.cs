@@ -40,9 +40,9 @@ public class HexPlayer : MonoBehaviour
         inventory = GetComponent<Inventory>();
         playerAudio = GetComponent<PlayerAudio>();
         SnapToTile();
-        state = State.Ready;
+        state = State.Waiting;
         queuedInteraction = CustomTile.Interaction.None;
-        ShowMoveButtons();
+        GiveControl();
     }
 
     private void Update()
@@ -122,7 +122,13 @@ public class HexPlayer : MonoBehaviour
         HideMoveButtons();
         state = State.Waiting;
         // TODO: Handle Interaction
-        state = State.Ready;
+        GiveControl();
+    }
+
+    public void GiveControl()
+    {
+        if (state == State.Waiting)
+            state = State.Ready;
         ShowMoveButtons();
     }
 

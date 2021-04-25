@@ -5,6 +5,7 @@ using UnityEngine;
 public class Tutorial : MonoBehaviour
 {
     public HexPlayer player;
+    public float delay = 0.5f;
     int index;
     bool between;
 
@@ -24,12 +25,8 @@ public class Tutorial : MonoBehaviour
         {
             if (player.CurrentState == HexPlayer.State.Ready)
             {
-                transform.GetChild(index).gameObject.SetActive(true);
-                player.CurrentAudio.PlayAlert();
-                index++;
+                StartCoroutine(ShowNextTutorial());
                 between = false;
-                if (index >= transform.childCount)
-                    enabled = false;
             }
         }
         else
@@ -37,5 +34,15 @@ public class Tutorial : MonoBehaviour
             if (player.CurrentState != HexPlayer.State.Ready)
                 between = true;
         }
+    }
+
+    IEnumerator ShowNextTutorial()
+    {
+        yield return new WaitForSeconds(delay);
+        index++;
+        transform.GetChild(index).gameObject.SetActive(true);
+        player.CurrentAudio.PlayAlert();
+        if (index >= transform.childCount)
+            enabled = false;
     }
 }
