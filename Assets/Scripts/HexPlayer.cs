@@ -42,7 +42,6 @@ public class HexPlayer : MonoBehaviour
         SnapToTile();
         state = State.Waiting;
         queuedInteraction = CustomTile.Interaction.None;
-        GiveControl();
     }
 
     private void Update()

@@ -39,9 +39,9 @@ public class Tutorial : MonoBehaviour
     IEnumerator ShowNextTutorial()
     {
         yield return new WaitForSeconds(delay);
-        index++;
         transform.GetChild(index).gameObject.SetActive(true);
         player.CurrentAudio.PlayAlert();
+        index++;
         if (index >= transform.childCount)
             enabled = false;
     }
