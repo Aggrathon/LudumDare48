@@ -82,7 +82,7 @@ public class InteractionUI : MonoBehaviour
                             break;
                         case 2:
                             ClearOptions("Strangers");
-                            AddOption("They offer to trade 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                            AddOption("They offer to trade 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
                             {
                                 inventory.gold.value--;
                                 inventory.food.Refill(5);
@@ -124,25 +124,25 @@ public class InteractionUI : MonoBehaviour
                     }
                     Show();
                 });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Keep to yourself", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Fields:
                 AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { inventory.food.Refill(2); player.GiveControl(); });
                 AddOption("Rest, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Forest:
                 AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food><sprite name=Food>", true, () => { inventory.food.Refill(3); player.GiveControl(); });
-                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>", inventory.bow.value > 1, () =>
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>", inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.food.Refill(6);
                     inventory.bow.value -= 2;
                     player.GiveControl();
                 });
-                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", inventory.dagger.value > 1, () =>
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", inventory.dagger.value > 1 && !inventory.bow.IsFull(), () =>
                 {
                     inventory.dagger.value -= 2;
                     inventory.bow.Refill(5);
@@ -150,7 +150,7 @@ public class InteractionUI : MonoBehaviour
                 });
                 AddOption(
                     "Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
-                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    inventory.dagger.value > 0 && inventory.axe.value > 0 && !inventory.bow.IsFull(),
                     () =>
                     {
                         inventory.dagger.value--;
@@ -158,7 +158,7 @@ public class InteractionUI : MonoBehaviour
                         inventory.bow.Refill(5);
                         player.GiveControl();
                     });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
@@ -191,12 +191,13 @@ public class InteractionUI : MonoBehaviour
                     });
                     break;
                 }
-                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 8<sprite name=Food>", inventory.bow.value > 1, () =>
-                {
-                    inventory.food.Refill(8);
-                    inventory.bow.value -= 2;
-                    player.GiveControl();
-                });
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 8<sprite name=Food>",
+                    inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
+                    {
+                        inventory.food.Refill(8);
+                        inventory.bow.value -= 2;
+                        player.GiveControl();
+                    });
                 AddOption(
                     "Hunt for leather, spend <sprite name=Bow><sprite name=Dagger> to enlargen your backpack",
                     inventory.bow.value > 0 && inventory.dagger.value > 0,
@@ -211,31 +212,30 @@ public class InteractionUI : MonoBehaviour
                      });
                 AddOption(
                     "Hunt for trophies, spend <sprite name=Bow><sprite name=Bow> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
-                    inventory.bow.value > 1, () =>
+                    inventory.bow.value > 1 && !inventory.gold.IsFull(), () =>
                     {
                         inventory.bow.value -= 2;
                         inventory.gold.Refill(3);
                         player.GiveControl();
                     });
-                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", inventory.dagger.value > 1, () =>
-                {
-                    inventory.dagger.value -= 2;
-                    inventory.bow.Refill(5);
-                    player.GiveControl();
-                });
-                AddOption(
-                    "Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
-                    inventory.dagger.value > 0 && inventory.axe.value > 0,
-                    () =>
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>",
+                    inventory.dagger.value > 1 && !inventory.bow.IsFull(), () =>
                     {
-                        inventory.dagger.value--;
-                        inventory.axe.value--;
+                        inventory.dagger.value -= 2;
                         inventory.bow.Refill(5);
                         player.GiveControl();
                     });
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
+                    inventory.dagger.value > 0 && inventory.axe.value > 0 && !inventory.bow.IsFull(), () =>
+                     {
+                         inventory.dagger.value--;
+                         inventory.axe.value--;
+                         inventory.bow.Refill(5);
+                         player.GiveControl();
+                     });
                 AddOption(
                     "Sculpt wooden idol, spend <sprite name=Dagger><sprite name=Axe> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
-                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    inventory.dagger.value > 0 && inventory.axe.value > 0 && !inventory.gold.IsFull(),
                     () =>
                     {
                         inventory.dagger.value--;
@@ -243,7 +243,7 @@ public class InteractionUI : MonoBehaviour
                         inventory.gold.Refill(3);
                         player.GiveControl();
                     });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
@@ -276,21 +276,23 @@ public class InteractionUI : MonoBehaviour
                     });
                     break;
                 }
-                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>", inventory.bow.value > 1, () =>
-                {
-                    inventory.food.Refill(6);
-                    inventory.bow.value -= 2;
-                    player.GiveControl();
-                });
-                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 8<sprite name=Food>", inventory.axe.value > 1, () =>
-                {
-                    inventory.food.Refill(8);
-                    inventory.axe.value -= 2;
-                    player.GiveControl();
-                });
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>",
+                    inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
+                    {
+                        inventory.food.Refill(6);
+                        inventory.bow.value -= 2;
+                        player.GiveControl();
+                    });
+                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 8<sprite name=Food>",
+                    inventory.axe.value > 1 && !inventory.food.IsFull(), () =>
+                    {
+                        inventory.food.Refill(8);
+                        inventory.axe.value -= 2;
+                        player.GiveControl();
+                    });
                 AddOption(
                     "Sculpt wooden idol, spend <sprite name=Dagger><sprite name=Axe> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
-                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    inventory.dagger.value > 0 && inventory.axe.value > 0 && !inventory.gold.IsFull(),
                     () =>
                     {
                         inventory.dagger.value--;
@@ -298,26 +300,26 @@ public class InteractionUI : MonoBehaviour
                         inventory.gold.Refill(3);
                         player.GiveControl();
                     });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Slide downhill, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Rocks:
             case CustomTile.Interaction.Mountain:
-                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 4<sprite name=Food>", inventory.bow.value > 1, () =>
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 4<sprite name=Food>", inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.food.Refill(4);
                     inventory.bow.value -= 2;
                     player.GiveControl();
                 });
-                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 4<sprite name=Food>", inventory.axe.value > 1, () =>
+                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 4<sprite name=Food>", inventory.axe.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.food.Refill(4);
                     inventory.axe.value -= 2;
                     player.GiveControl();
                 });
                 AddOption("Seek shelter, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
-                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Snow:
@@ -327,25 +329,25 @@ public class InteractionUI : MonoBehaviour
                     + "<b>Final Score: " + inventory.time.ToString() + "</b>");
                 return;
             case CustomTile.Interaction.Settlement:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value--;
                     inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value -= 2;
                     inventory.food.Refill(12);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3 && !inventory.bow.IsFull(), () =>
                 {
                     inventory.gold.value -= 4;
                     inventory.bow.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2 && !inventory.dagger.IsFull(), () =>
                 {
                     inventory.gold.value -= 3;
                     inventory.dagger.Refill();
@@ -354,19 +356,19 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.LoggingCamp:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value--;
                     inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value -= 4;
                     inventory.bow.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2 && !inventory.axe.IsFull(), () =>
                 {
                     inventory.gold.value -= 3;
                     inventory.axe.Refill();
@@ -381,31 +383,31 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.ElfVillage:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value--;
                     inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value -= 2;
                     inventory.food.Refill(12);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1 && !inventory.bandage.IsFull(), () =>
                 {
                     inventory.gold.value -= 2;
                     inventory.bandage.Refill(1);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bow> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Bow> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2 && !inventory.bow.IsFull(), () =>
                 {
                     inventory.gold.value -= 3;
                     inventory.bow.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Dagger> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
+                AddOption("Buy <sprite name=Dagger> for 4<sprite name=Gold>", inventory.gold.value > 3 && !inventory.dagger.IsFull(), () =>
                 {
                     inventory.gold.value -= 4;
                     inventory.dagger.Refill();
@@ -420,31 +422,31 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.DwarfMine:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value--;
                     inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.gold.value -= 2;
                     inventory.food.Refill(12);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1 && !inventory.bandage.IsFull(), () =>
                 {
                     inventory.gold.value -= 2;
                     inventory.bandage.Refill(1);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2 && !inventory.dagger.IsFull(), () =>
                 {
                     inventory.gold.value -= 3;
                     inventory.dagger.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2 && !inventory.axe.IsFull(), () =>
                 {
                     inventory.gold.value -= 3;
                     inventory.axe.Refill();
@@ -453,7 +455,7 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Flee:
-                inventory.outro.Show("<b>Game Over:</b>\n\nYou decided not explore, and instead just ran away!");
+                inventory.outro.Show("<b>Game Over:</b>\n\nYou decided to not explore, and instead just ran away!");
                 return;
             default:
                 Debug.LogException(new System.Exception("Missing switch statement"));

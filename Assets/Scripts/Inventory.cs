@@ -28,6 +28,16 @@ public class Inventory : MonoBehaviour
         {
             value -= amount;
         }
+
+        public bool IsFull()
+        {
+            return value >= max;
+        }
+
+        public bool IsEmpty()
+        {
+            return value <= 0;
+        }
     }
 
     private void Start()
