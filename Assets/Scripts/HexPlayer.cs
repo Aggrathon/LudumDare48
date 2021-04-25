@@ -95,14 +95,14 @@ public class HexPlayer : MonoBehaviour
         }
         else
         {
+            inventory.time--;
             inventory.food.value -= ti.food;
             inventory.energy.Refill();
             InteractWithTile(ti.interaction, true);
         }
-        if (inventory.IsDead())
-        {
-            // TODO: Die
-        }
+        if (inventory.CheckDead())
+            state = State.Waiting;
+        inventory.UpdateUI();
     }
 
     void InteractWithTile(CustomTile.Interaction interaction, bool forced)
