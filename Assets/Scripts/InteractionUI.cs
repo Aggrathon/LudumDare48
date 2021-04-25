@@ -195,22 +195,40 @@ public class InteractionUI : MonoBehaviour
                     player.CurrentInventory.dagger.Refill();
                     player.GiveControl();
                 });
+                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
+                break;
+            case CustomTile.Interaction.LoggingCamp:
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                {
+                    player.CurrentInventory.gold.value--;
+                    player.CurrentInventory.food.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", player.CurrentInventory.gold.value > 3, () =>
+                {
+                    player.CurrentInventory.gold.value -= 4;
+                    player.CurrentInventory.bow.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Axe> for 3<sprite name=Gold>", player.CurrentInventory.gold.value > 2, () =>
+                {
+                    player.CurrentInventory.gold.value -= 3;
+                    player.CurrentInventory.axe.Refill();
+                    player.GiveControl();
+                });
                 AddOption("Buy a map (<sprite name=Time><sprite name=Time>) for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
                 {
                     player.CurrentInventory.gold.value--;
-                    player.CurrentInventory.time += 2;
+                    player.CurrentInventory.time += 3;
                     player.GiveControl();
                 });
-                AddOption("Leave", true, player.GiveControl);
-                break;
-            case CustomTile.Interaction.LoggingCamp:
-                AddOption("Leave", true, player.GiveControl);
+                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.ElfVillage:
-                AddOption("Leave", true, player.GiveControl);
+                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.DwarfMine:
-                AddOption("Leave", true, player.GiveControl);
+                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Flee:
                 player.CurrentInventory.outro.Show("<b>Game Over:</b>\n\nYou decided not explore, and instead just ran away!");

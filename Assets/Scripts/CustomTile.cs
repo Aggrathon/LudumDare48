@@ -62,7 +62,7 @@ public class CustomTile : Tile
                 Interaction.Road => "Road",
                 Interaction.Fields => "Fields",
                 Interaction.Forest => "Forest",
-                Interaction.OldGrowth => "Old Growth Forest",
+                Interaction.OldGrowth => "Old Growth",
                 Interaction.Hills => "Hills",
                 Interaction.Rocks => "Rocky Ground",
                 Interaction.Mountain => "Mountain",
@@ -71,7 +71,7 @@ public class CustomTile : Tile
                 Interaction.LoggingCamp => "Logging Camp",
                 Interaction.ElfVillage => "Elven Village",
                 Interaction.DwarfMine => "Dwarwen Mine",
-                Interaction.Flee => "Village",
+                Interaction.Flee => "Border Village",
                 _ => throw new System.Exception("Missing switch statement")
             };
         }

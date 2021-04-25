@@ -8,10 +8,8 @@ using TMPro;
 public class MoveButton : MonoBehaviour
 {
 
-    public Sprite timeSprite;
-    public Sprite energySprite;
-    public Sprite foodSprite;
-
+    TextMeshProUGUI title;
+    TextMeshProUGUI reqs;
     Button button;
     System.Action callback;
 
@@ -19,6 +17,8 @@ public class MoveButton : MonoBehaviour
     {
         button = GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+        title = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        reqs = transform.GetChild(1).GetComponent<TextMeshProUGUI>();
     }
 
     void OnClick()
@@ -29,38 +29,30 @@ public class MoveButton : MonoBehaviour
     public void Enable(CustomTile.TileInfo ti, bool rest, bool enabled, System.Action callback)
     {
         this.callback = callback;
-        int index = 1;
-        Transform layout = transform.GetChild(1);
+        title.text = ti.GetTitle();
+        string text = "Takes: ";
         if (rest)
         {
-            Image img = layout.GetChild(index).GetComponent<Image>();
-            img.sprite = timeSprite;
-            img.gameObject.SetActive(true);
-            index++;
+            text += "<sprite name=Time>";
         }
         else
         {
+            if (ti.energy > 10)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             for (int i = 0; i < ti.energy; i++)
             {
-                Image img = layout.GetChild(index).GetComponent<Image>();
-                img.sprite = energySprite;
-                img.gameObject.SetActive(true);
-                index++;
+                text += "<sprite name=Energy>";
             }
         }
         for (int i = 0; i < ti.food; i++)
         {
-            Image img = layout.GetChild(index).GetComponent<Image>();
-            img.sprite = foodSprite;
-            img.gameObject.SetActive(true);
-            index++;
+            text += "<sprite name=Food>";
         }
-        for (; index < transform.GetChild(1).childCount; index++)
-        {
-            transform.GetChild(1).GetChild(index).gameObject.SetActive(false);
-        }
+        reqs.text = text;
         button.interactable = enabled;
-        transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ti.GetTitle();
         gameObject.SetActive(true);
     }
 
