@@ -92,9 +92,14 @@ public class InteractionUI : MonoBehaviour
                             break;
                         case 3:
                             ClearOptions("Robbers");
-                            AddOption("They demand half your <sprite name=Gold>", true, () =>
+                            AddOption("They demand half of your <sprite name=Gold>", !inventory.gold.IsEmpty(), () =>
                             {
                                 inventory.gold.value /= 2;
+                                player.GiveControl();
+                            });
+                            AddOption("They demand half of your <sprite name=Food>", !inventory.food.IsEmpty(), () =>
+                            {
+                                inventory.food.value /= 2;
                                 player.GiveControl();
                             });
                             AddOption("Try to fight them, loose <sprite name=Health><sprite name=Health>", true, () =>
@@ -166,30 +171,57 @@ public class InteractionUI : MonoBehaviour
                 if (Random.value < 0.1f)
                 {
                     ClearOptions("Hunted by Wolves");
-                    AddOption("You try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
+                    AddOption("Try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
                     {
                         inventory.health.value -= 2;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
+                    AddOption("Offer some food, loose <sprite name=Health><sprite name=Food><sprite name=Food>", inventory.food.value > 1, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.food.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("Fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.bow.value -= 1;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
+                    AddOption("Fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.dagger.value -= 1;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
+                    AddOption("Fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.axe.value -= 1;
                         player.GiveControl();
                     });
                     break;
+                }
+                if (Random.value < 0.1f)
+                {
+                    AddOption("You see an old man wandering alone in the forest", true, () =>
+                    {
+                        ClearOptions("Meeting a Druid");
+                        AddOption("Trade 10<sprite name=Food> for a <sprite name=Bandage>", inventory.food.value > 9 && !inventory.bandage.IsFull(), () =>
+                        {
+                            inventory.bandage.value++;
+                            inventory.food.value -= 10;
+                            player.GiveControl();
+                        });
+                        AddOption("Trade a <sprite name=Bandage> for 10<sprite name=Food>", !inventory.bandage.IsEmpty() && !inventory.bandage.IsFull(), () =>
+                        {
+                            inventory.bandage.value--;
+                            inventory.food.Refill(10);
+                            player.GiveControl();
+                        });
+                        AddOption("Let him be", true, player.GiveControl);
+                        Show();
+                    });
                 }
                 AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 8<sprite name=Food>",
                     inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
@@ -251,24 +283,30 @@ public class InteractionUI : MonoBehaviour
                 if (Random.value < 0.15f)
                 {
                     ClearOptions("Hunted by Wolves");
-                    AddOption("You try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
+                    AddOption("Try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
                     {
                         inventory.health.value -= 2;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
+                    AddOption("Offer some food, loose <sprite name=Health><sprite name=Food><sprite name=Food>", inventory.food.value > 1, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.food.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("Fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.bow.value -= 1;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
+                    AddOption("Fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.dagger.value -= 1;
                         player.GiveControl();
                     });
-                    AddOption("You try to fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
+                    AddOption("Fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
                     {
                         inventory.health.value -= 1;
                         inventory.axe.value -= 1;
@@ -306,6 +344,40 @@ public class InteractionUI : MonoBehaviour
                 break;
             case CustomTile.Interaction.Rocks:
             case CustomTile.Interaction.Mountain:
+                if (Random.value < 0.1f)
+                {
+                    ClearOptions("Attacked by a Bear");
+                    AddOption("Try to run away, loose <sprite name=Health><sprite name=Health><sprite name=Health>", true, () =>
+                    {
+                        inventory.health.value -= 3;
+                        player.GiveControl();
+                    });
+                    AddOption("Offer some food, loose <sprite name=Health><sprite name=Food><sprite name=Food>", inventory.food.value > 1, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.food.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("Fightwith your <sprite name=Bow>, loose <sprite name=Health><sprite name=Health>", inventory.bow.value > 0, () =>
+                    {
+                        inventory.health.value -= 2;
+                        inventory.bow.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("Fight with your <sprite name=Dagger>, loose <sprite name=Health><sprite name=Health>", inventory.dagger.value > 0, () =>
+                    {
+                        inventory.health.value -= 2;
+                        inventory.dagger.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("Fight with your <sprite name=Axe>, loose <sprite name=Health><sprite name=Health>", inventory.axe.value > 0, () =>
+                    {
+                        inventory.health.value -= 2;
+                        inventory.axe.value -= 1;
+                        player.GiveControl();
+                    });
+                    break;
+                }
                 AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 4<sprite name=Food>", inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
                 {
                     inventory.food.Refill(4);
