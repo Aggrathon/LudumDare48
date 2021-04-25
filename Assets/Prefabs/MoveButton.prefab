@@ -202,8 +202,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Elven Village
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
+  m_sharedMaterial: {fileID: -1653469401833316664, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -336,8 +336,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Requires: <sprite name=Energy>'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
+  m_sharedMaterial: {fileID: -1653469401833316664, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

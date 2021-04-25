@@ -37,4 +37,4 @@ MonoBehaviour:
   food: 2
   energy: 1
   interaction: 4
-  encounterChance: 0.1
+  encounterChance: 0.15
