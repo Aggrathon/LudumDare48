@@ -8,20 +8,16 @@ public class GridWorld : MonoBehaviour
     public Tilemap terrain;
     public Tilemap decorators;
 
-    public (int, int, CustomTileData.Interaction) GetTileCost(Vector3Int pos)
+
+    public CustomTile.TileInfo GetTileInfo(Vector3Int pos)
     {
-        var terrainTile = terrain.GetTile<CustomTileData>(pos);
-        int energy = terrainTile.energy;
-        int food = terrainTile.food;
-        var otherTile = decorators.GetTile<CustomTileData>(pos);
+        var terrainTile = terrain.GetTile<CustomTile>(pos);
+        var ti = new CustomTile.TileInfo(terrainTile);
+        var otherTile = decorators.GetTile<CustomTile>(pos);
         if (otherTile != null)
-        {
-            energy += otherTile.energy;
-            food += otherTile.food;
-            if (otherTile.interaction != CustomTileData.Interaction.None)
-                return (energy, food, otherTile.interaction);
-        }
-        return (energy, food, terrainTile.interaction);
+            ti.Combine(otherTile);
+        ti.energy = Mathf.Max(0, ti.energy);
+        return ti;
     }
 
     public Vector3 SnapToTile(Vector3 pos)
@@ -39,9 +35,9 @@ public class GridWorld : MonoBehaviour
         return terrain.WorldToCell(pos);
     }
 
-    public (int, int, CustomTileData.Interaction) GetTileCost(Vector3 pos)
+    public CustomTile.TileInfo GetTileCost(Vector3 pos)
     {
-        return GetTileCost(GetTile(pos));
+        return GetTileInfo(GetTile(pos));
     }
 
     public Vector3Int LeftOf(Vector3Int pos)
