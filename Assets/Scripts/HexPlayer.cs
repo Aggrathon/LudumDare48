@@ -31,6 +31,7 @@ public class HexPlayer : MonoBehaviour
     State state;
     Vector3 target;
     CustomTile.TileInfo queuedInteraction;
+    bool canStay;
 
     public State CurrentState { get { return state; } }
     public PlayerAudio CurrentAudio { get { return playerAudio; } }
@@ -44,6 +45,7 @@ public class HexPlayer : MonoBehaviour
         SnapToTile();
         state = State.Waiting;
         queuedInteraction = new CustomTile.TileInfo();
+        canStay = true;
     }
 
     private void Update()
@@ -89,6 +91,7 @@ public class HexPlayer : MonoBehaviour
         {
             if (inventory.CanEnterTile(ti))
             {
+                canStay = true;
                 tilemapPos = pos;
                 target = world.SnapToTile(tilemapPos);
                 state = State.Moving;
@@ -107,11 +110,20 @@ public class HexPlayer : MonoBehaviour
         }
         else
         {
-            inventory.time--;
-            inventory.food.value -= ti.food;
-            inventory.energy.Refill();
-            InteractWithTile(ti);
-            inventory.UpdateUI();
+            if (canStay)
+            {
+                canStay = false;
+                inventory.time--;
+                inventory.food.value -= ti.food;
+                inventory.energy.Refill();
+                InteractWithTile(ti);
+                inventory.UpdateUI();
+            }
+            else
+            {
+                playerAudio.PlayError();
+                GiveControl();
+            }
         }
     }
 
@@ -141,12 +153,16 @@ public class HexPlayer : MonoBehaviour
     void ShowMoveButtons()
     {
         var ti = world.GetTileInfo(world.TopOf(tilemapPos));
-        moveUpButton.Enable(ti, false, inventory.CanEnterTile(ti), GoUp);
+        bool canEnterUp = inventory.CanEnterTile(ti);
+        moveUpButton.Enable(ti, false, canEnterUp, GoUp);
         ti = world.GetTileInfo(world.LeftOf(tilemapPos));
-        moveLeftButton.Enable(ti, false, inventory.CanEnterTile(ti), GoLeft);
+        bool canEnterLeft = inventory.CanEnterTile(ti);
+        moveLeftButton.Enable(ti, false, canEnterLeft, GoLeft);
         ti = world.GetTileInfo(world.RightOf(tilemapPos));
-        moveRightButton.Enable(ti, false, inventory.CanEnterTile(ti), GoRight);
-        moveStayButton.Enable(world.GetTileInfo(tilemapPos), true, true, Stay);
+        bool canEnterRight = inventory.CanEnterTile(ti);
+        moveRightButton.Enable(ti, false, canEnterRight, GoRight);
+        canStay = canStay || !(canEnterLeft | canEnterRight | canEnterUp);
+        moveStayButton.Enable(world.GetTileInfo(tilemapPos), true, canStay, Stay);
     }
 
     void HideMoveButtons()

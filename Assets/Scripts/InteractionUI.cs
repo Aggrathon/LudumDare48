@@ -57,6 +57,7 @@ public class InteractionUI : MonoBehaviour
     public void StartEncounter(HexPlayer player, CustomTile.TileInfo ti)
     {
         ClearOptions(ti.GetTitle());
+        var inventory = player.CurrentInventory;
         switch (ti.interaction)
         {
             case CustomTile.Interaction.None:
@@ -75,16 +76,16 @@ public class InteractionUI : MonoBehaviour
                             ClearOptions("Strangers");
                             AddOption("You tell them about your adventure and they give you <sprite name=Food><sprite name=Food><sprite name=Food>", true, () =>
                             {
-                                player.CurrentInventory.food.Refill(3);
+                                inventory.food.Refill(3);
                                 player.GiveControl();
                             });
                             break;
                         case 2:
                             ClearOptions("Strangers");
-                            AddOption("They offer to trade 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                            AddOption("They offer to trade 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
                             {
-                                player.CurrentInventory.gold.value--;
-                                player.CurrentInventory.food.Refill(5);
+                                inventory.gold.value--;
+                                inventory.food.Refill(5);
                                 player.GiveControl();
                             });
                             AddOption("Decline", true, player.GiveControl);
@@ -93,145 +94,366 @@ public class InteractionUI : MonoBehaviour
                             ClearOptions("Robbers");
                             AddOption("They demand half your <sprite name=Gold>", true, () =>
                             {
-                                player.CurrentInventory.gold.value /= 2;
+                                inventory.gold.value /= 2;
                                 player.GiveControl();
                             });
                             AddOption("Try to fight them, loose <sprite name=Health><sprite name=Health>", true, () =>
                             {
-                                player.CurrentInventory.health.value -= 2;
+                                inventory.health.value -= 2;
                                 player.GiveControl();
                             });
-                            AddOption("Try to fight them with your <sprite name=Bow>, loose <sprite name=Health>", player.CurrentInventory.bow.value > 0, () =>
+                            AddOption("Try to fight them with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
                             {
-                                player.CurrentInventory.health.value -= 1;
-                                player.CurrentInventory.bow.value -= 1;
+                                inventory.health.value -= 1;
+                                inventory.bow.value -= 1;
                                 player.GiveControl();
                             });
-                            AddOption("Try to fight them with your <sprite name=Dagger>, loose <sprite name=Health>", player.CurrentInventory.dagger.value > 0, () =>
+                            AddOption("Try to fight them with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
                             {
-                                player.CurrentInventory.health.value -= 1;
-                                player.CurrentInventory.dagger.value -= 1;
+                                inventory.health.value -= 1;
+                                inventory.dagger.value -= 1;
                                 player.GiveControl();
                             });
-                            AddOption("Try to fight them with your <sprite name=Axe>, loose <sprite name=Health>", player.CurrentInventory.axe.value > 0, () =>
+                            AddOption("Try to fight them with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
                             {
-                                player.CurrentInventory.health.value -= 1;
-                                player.CurrentInventory.axe.value -= 1;
+                                inventory.health.value -= 1;
+                                inventory.axe.value -= 1;
                                 player.GiveControl();
                             });
                             break;
                     }
                     Show();
                 });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Keep to yourself", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Fields:
-                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { player.CurrentInventory.food.Refill(2); player.GiveControl(); });
-                AddOption("Rest, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { player.CurrentInventory.energy.value += 2; player.GiveControl(); });
+                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { inventory.food.Refill(2); player.GiveControl(); });
+                AddOption("Rest, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Forest:
-                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { player.CurrentInventory.food.Refill(2); player.GiveControl(); });
-                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 5<sprite name=Food>", player.CurrentInventory.bow.value > 1, () =>
+                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food><sprite name=Food>", true, () => { inventory.food.Refill(3); player.GiveControl(); });
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>", inventory.bow.value > 1, () =>
                 {
-                    player.CurrentInventory.food.Refill(5);
-                    player.CurrentInventory.bow.value -= 2;
+                    inventory.food.Refill(6);
+                    inventory.bow.value -= 2;
                     player.GiveControl();
                 });
-                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", player.CurrentInventory.dagger.value > 1, () =>
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", inventory.dagger.value > 1, () =>
                 {
-                    player.CurrentInventory.dagger.value -= 2;
-                    player.CurrentInventory.bow.Refill(5);
+                    inventory.dagger.value -= 2;
+                    inventory.bow.Refill(5);
                     player.GiveControl();
                 });
                 AddOption(
                     "Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
-                    player.CurrentInventory.dagger.value > 0 && player.CurrentInventory.axe.value > 0,
+                    inventory.dagger.value > 0 && inventory.axe.value > 0,
                     () =>
                     {
-                        player.CurrentInventory.dagger.value--;
-                        player.CurrentInventory.axe.value--;
-                        player.CurrentInventory.bow.Refill(5);
+                        inventory.dagger.value--;
+                        inventory.axe.value--;
+                        inventory.bow.Refill(5);
                         player.GiveControl();
                     });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.OldGrowth:
+                if (Random.value < 0.1f)
+                {
+                    ClearOptions("Hunted by Wolves");
+                    AddOption("You try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
+                    {
+                        inventory.health.value -= 2;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.bow.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.dagger.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.axe.value -= 1;
+                        player.GiveControl();
+                    });
+                    break;
+                }
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 8<sprite name=Food>", inventory.bow.value > 1, () =>
+                {
+                    inventory.food.Refill(8);
+                    inventory.bow.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption(
+                    "Hunt for leather, spend <sprite name=Bow><sprite name=Dagger> to enlargen your backpack",
+                    inventory.bow.value > 0 && inventory.dagger.value > 0,
+                     () =>
+                     {
+                         inventory.bow.value--;
+                         inventory.dagger.value--;
+                         inventory.gold.max += 1;
+                         inventory.food.max += 2;
+                         inventory.bandage.max += 1;
+                         player.GiveControl();
+                     });
+                AddOption(
+                    "Hunt for trophies, spend <sprite name=Bow><sprite name=Bow> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
+                    inventory.bow.value > 1, () =>
+                    {
+                        inventory.bow.value -= 2;
+                        inventory.gold.Refill(3);
+                        player.GiveControl();
+                    });
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", inventory.dagger.value > 1, () =>
+                {
+                    inventory.dagger.value -= 2;
+                    inventory.bow.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption(
+                    "Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
+                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    () =>
+                    {
+                        inventory.dagger.value--;
+                        inventory.axe.value--;
+                        inventory.bow.Refill(5);
+                        player.GiveControl();
+                    });
+                AddOption(
+                    "Sculpt wooden idol, spend <sprite name=Dagger><sprite name=Axe> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
+                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    () =>
+                    {
+                        inventory.dagger.value--;
+                        inventory.axe.value--;
+                        inventory.gold.Refill(3);
+                        player.GiveControl();
+                    });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Hills:
-                AddOption("Continue Exploring", true, player.GiveControl);
+                if (Random.value < 0.15f)
+                {
+                    ClearOptions("Hunted by Wolves");
+                    AddOption("You try to run away from wolves, loose <sprite name=Health><sprite name=Health>", true, () =>
+                    {
+                        inventory.health.value -= 2;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Bow>, loose <sprite name=Health>", inventory.bow.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.bow.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Dagger>, loose <sprite name=Health>", inventory.dagger.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.dagger.value -= 1;
+                        player.GiveControl();
+                    });
+                    AddOption("You try to fight the wolves with your <sprite name=Axe>, loose <sprite name=Health>", inventory.axe.value > 0, () =>
+                    {
+                        inventory.health.value -= 1;
+                        inventory.axe.value -= 1;
+                        player.GiveControl();
+                    });
+                    break;
+                }
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>", inventory.bow.value > 1, () =>
+                {
+                    inventory.food.Refill(6);
+                    inventory.bow.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 8<sprite name=Food>", inventory.axe.value > 1, () =>
+                {
+                    inventory.food.Refill(8);
+                    inventory.axe.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption(
+                    "Sculpt wooden idol, spend <sprite name=Dagger><sprite name=Axe> to gain <sprite name=Gold><sprite name=Gold><sprite name=Gold>",
+                    inventory.dagger.value > 0 && inventory.axe.value > 0,
+                    () =>
+                    {
+                        inventory.dagger.value--;
+                        inventory.axe.value--;
+                        inventory.gold.Refill(3);
+                        player.GiveControl();
+                    });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
+                AddOption("Slide downhill, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Rocks:
-                AddOption("Continue Exploring", true, player.GiveControl);
-                break;
             case CustomTile.Interaction.Mountain:
-                AddOption("Continue Exploring", true, player.GiveControl);
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 4<sprite name=Food>", inventory.bow.value > 1, () =>
+                {
+                    inventory.food.Refill(4);
+                    inventory.bow.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption("Build a trap, spend <sprite name=Axe><sprite name=Axe> to gain 4<sprite name=Food>", inventory.axe.value > 1, () =>
+                {
+                    inventory.food.Refill(4);
+                    inventory.axe.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption("Seek shelter, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
+                if (inventory.health.value < inventory.health.max && inventory.bandage.value > 0)
+                    AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Snow:
-                AddOption("Continue Exploring", true, player.GiveControl);
-                break;
+                inventory.outro.Show(
+                    "<b>Game Completed!</b>\nYou've reached the top of the mountain. That's when it hits you; this is not deep at all, rather the opposite, you are actually very high up!"
+                    + " You can see almost the whole world from here, but not your mother. That means those youngsters must not have told the truth and your honour is saved!\n"
+                    + "<b>Final Score: " + inventory.time.ToString() + "</b>");
+                return;
             case CustomTile.Interaction.Settlement:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
                 {
-                    player.CurrentInventory.gold.value--;
-                    player.CurrentInventory.food.Refill(5);
+                    inventory.gold.value--;
+                    inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", player.CurrentInventory.gold.value > 1, () =>
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
                 {
-                    player.CurrentInventory.gold.value -= 2;
-                    player.CurrentInventory.food.Refill(12);
+                    inventory.gold.value -= 2;
+                    inventory.food.Refill(12);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", player.CurrentInventory.gold.value > 3, () =>
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
                 {
-                    player.CurrentInventory.gold.value -= 4;
-                    player.CurrentInventory.bow.Refill();
+                    inventory.gold.value -= 4;
+                    inventory.bow.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Dagger> for 3<sprite name=Gold>", player.CurrentInventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
                 {
-                    player.CurrentInventory.gold.value -= 3;
-                    player.CurrentInventory.dagger.Refill();
+                    inventory.gold.value -= 3;
+                    inventory.dagger.Refill();
                     player.GiveControl();
                 });
-                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
+                AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.LoggingCamp:
-                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
                 {
-                    player.CurrentInventory.gold.value--;
-                    player.CurrentInventory.food.Refill(5);
+                    inventory.gold.value--;
+                    inventory.food.Refill(5);
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", player.CurrentInventory.gold.value > 3, () =>
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
                 {
-                    player.CurrentInventory.gold.value -= 4;
-                    player.CurrentInventory.bow.Refill();
+                    inventory.gold.value -= 4;
+                    inventory.bow.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy <sprite name=Axe> for 3<sprite name=Gold>", player.CurrentInventory.gold.value > 2, () =>
+                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
                 {
-                    player.CurrentInventory.gold.value -= 3;
-                    player.CurrentInventory.axe.Refill();
+                    inventory.gold.value -= 3;
+                    inventory.axe.Refill();
                     player.GiveControl();
                 });
-                AddOption("Buy a map (<sprite name=Time><sprite name=Time>) for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                AddOption("Buy a map (<sprite name=Time><sprite name=Time>) for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
                 {
-                    player.CurrentInventory.gold.value--;
-                    player.CurrentInventory.time += 3;
+                    inventory.gold.value -= 2;
+                    inventory.time += 2;
                     player.GiveControl();
                 });
-                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
+                AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.ElfVillage:
-                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                {
+                    inventory.gold.value--;
+                    inventory.food.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                {
+                    inventory.gold.value -= 2;
+                    inventory.food.Refill(12);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                {
+                    inventory.gold.value -= 2;
+                    inventory.bandage.Refill(1);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Bow> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                {
+                    inventory.gold.value -= 3;
+                    inventory.bow.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Dagger> for 4<sprite name=Gold>", inventory.gold.value > 3, () =>
+                {
+                    inventory.gold.value -= 4;
+                    inventory.dagger.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy a map (<sprite name=Time><sprite name=Time><sprite name=Time>) for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                {
+                    inventory.gold.value -= 2;
+                    inventory.time += 3;
+                    player.GiveControl();
+                });
+                AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.DwarfMine:
-                AddOption("Leave", true, () => { player.CurrentInventory.food.Consume(1); player.GiveControl(); });
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0, () =>
+                {
+                    inventory.gold.value--;
+                    inventory.food.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                {
+                    inventory.gold.value -= 2;
+                    inventory.food.Refill(12);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Bandage> for <sprite name=Gold><sprite name=Gold>", inventory.gold.value > 1, () =>
+                {
+                    inventory.gold.value -= 2;
+                    inventory.bandage.Refill(1);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Dagger> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                {
+                    inventory.gold.value -= 3;
+                    inventory.dagger.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Axe> for <sprite name=Gold><sprite name=Gold><sprite name=Gold>", inventory.gold.value > 2, () =>
+                {
+                    inventory.gold.value -= 3;
+                    inventory.axe.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Flee:
-                player.CurrentInventory.outro.Show("<b>Game Over:</b>\n\nYou decided not explore, and instead just ran away!");
+                inventory.outro.Show("<b>Game Over:</b>\n\nYou decided not explore, and instead just ran away!");
                 return;
             default:
                 Debug.LogException(new System.Exception("Missing switch statement"));

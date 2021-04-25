@@ -64,7 +64,7 @@ public class CustomTile : Tile
                 Interaction.Forest => "Forest",
                 Interaction.OldGrowth => "Old Growth",
                 Interaction.Hills => "Hills",
-                Interaction.Rocks => "Rocky Ground",
+                Interaction.Rocks => "Rocky Slope",
                 Interaction.Mountain => "Mountain",
                 Interaction.Snow => "Snowy Peaks",
                 Interaction.Settlement => "Village",
