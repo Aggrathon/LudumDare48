@@ -28,6 +28,7 @@ public class CustomTile : Tile
     public int food;
     public int energy;
     public Interaction interaction;
+    public float encounterChance = 0.1f;
 
 
     public struct TileInfo
@@ -35,12 +36,14 @@ public class CustomTile : Tile
         public int energy;
         public int food;
         public Interaction interaction;
+        public float encounterChance;
 
         public TileInfo(CustomTile ct)
         {
             energy = ct.energy;
             food = ct.food;
             interaction = ct.interaction;
+            encounterChance = ct.encounterChance;
         }
 
         public string GetTitle()
@@ -68,7 +71,11 @@ public class CustomTile : Tile
         {
             energy += other.energy;
             food += other.food;
-            interaction = other.interaction == Interaction.None ? interaction : other.interaction;
+            if (other.interaction != Interaction.None)
+            {
+                interaction = other.interaction;
+                encounterChance = other.encounterChance;
+            }
         }
 
         public void Combine(CustomTile other)

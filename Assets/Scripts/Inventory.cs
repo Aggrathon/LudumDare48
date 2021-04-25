@@ -65,6 +65,11 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public bool CanEnterTile(CustomTile.TileInfo ti)
+    {
+        return energy.value >= ti.energy && food.value >= ti.food;
+    }
+
     public void UpdateUI()
     {
         ui.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = time.ToString();

@@ -9,6 +9,10 @@ using UnityEngine.Tilemaps;
 public class HexPlayer : MonoBehaviour
 {
     public GridWorld world;
+    public MoveButton moveUpButton;
+    public MoveButton moveLeftButton;
+    public MoveButton moveRightButton;
+    public MoveButton moveStayButton;
 
     public float speed = 3.0f;
 
@@ -35,6 +39,7 @@ public class HexPlayer : MonoBehaviour
         SnapToTile();
         state = State.Ready;
         queuedInteraction = CustomTile.Interaction.None;
+        ShowMoveButtons();
     }
 
     private void Update()
@@ -48,12 +53,12 @@ public class HexPlayer : MonoBehaviour
                 transform.position = target;
                 if (queuedInteraction != CustomTile.Interaction.None)
                 {
-                    InteractWithTile(queuedInteraction, false);
+                    InteractWithTile(queuedInteraction);
                     queuedInteraction = CustomTile.Interaction.None;
                 }
                 else
                 {
-                    // TODO: Show move UI
+                    ShowMoveButtons();
                     state = State.Ready;
                 }
             }
@@ -78,15 +83,16 @@ public class HexPlayer : MonoBehaviour
         var ti = world.GetTileInfo(pos);
         if (tilemapPos != pos)
         {
-            if (inventory.energy.value >= ti.energy && inventory.food.value >= ti.food)
+            if (inventory.CanEnterTile(ti))
             {
                 tilemapPos = pos;
                 target = world.SnapToTile(tilemapPos);
                 state = State.Moving;
+                HideMoveButtons();
                 playerAudio.PlaySteps();
                 inventory.energy.value -= ti.energy;
                 inventory.food.value -= ti.food;
-                queuedInteraction = ti.interaction;
+                queuedInteraction = Random.value < ti.encounterChance ? ti.interaction : CustomTile.Interaction.None;
             }
             else
             {
@@ -98,24 +104,42 @@ public class HexPlayer : MonoBehaviour
             inventory.time--;
             inventory.food.value -= ti.food;
             inventory.energy.Refill();
-            InteractWithTile(ti.interaction, true);
+            InteractWithTile(ti.interaction);
         }
         if (inventory.CheckDead())
+        {
             state = State.Waiting;
+            HideMoveButtons();
+        }
         inventory.UpdateUI();
     }
 
-    void InteractWithTile(CustomTile.Interaction interaction, bool forced)
+    void InteractWithTile(CustomTile.Interaction interaction)
     {
+        HideMoveButtons();
         state = State.Waiting;
+        // TODO: Handle Interaction
         state = State.Ready;
-        // TODO: Show move UI
+        ShowMoveButtons();
     }
 
-    bool CanEnterTile(Vector3Int pos)
+    void ShowMoveButtons()
     {
-        var ti = world.GetTileInfo(pos);
-        return inventory.energy.value >= ti.energy && inventory.food.value >= ti.food;
+        var ti = world.GetTileInfo(world.TopOf(tilemapPos));
+        moveUpButton.Enable(ti, false, inventory.CanEnterTile(ti), GoUp);
+        ti = world.GetTileInfo(world.LeftOf(tilemapPos));
+        moveLeftButton.Enable(ti, false, inventory.CanEnterTile(ti), GoLeft);
+        ti = world.GetTileInfo(world.RightOf(tilemapPos));
+        moveRightButton.Enable(ti, false, inventory.CanEnterTile(ti), GoRight);
+        moveStayButton.Enable(world.GetTileInfo(tilemapPos), true, true, Stay);
+    }
+
+    void HideMoveButtons()
+    {
+        moveUpButton.Disable();
+        moveLeftButton.Disable();
+        moveRightButton.Disable();
+        moveStayButton.Disable();
     }
 
 
