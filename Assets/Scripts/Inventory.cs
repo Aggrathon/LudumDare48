@@ -7,6 +7,7 @@ public class Inventory : MonoBehaviour
 {
 
     [SerializeField] Transform ui;
+    [SerializeField] Outro outro;
 
     [System.Serializable]
     public struct Capacity
@@ -49,17 +50,17 @@ public class Inventory : MonoBehaviour
     {
         if (health.value <= 0)
         {
-            // TODO: End screen
+            outro.Show("<b>Game Over:</b>\n\nYou died!");
             return true;
         }
         if (food.value < 0)
         {
-            // TODO: End screen
+            outro.Show("<b>Game Over:</b>\n\nYou ran out of food!");
             return true;
         }
         if (time <= 0)
         {
-            // TODO: End screen
+            outro.Show("<b>Game Over:</b>\n\nYou took too long, no one remembers you anymore!");
             return true;
         }
         return false;
