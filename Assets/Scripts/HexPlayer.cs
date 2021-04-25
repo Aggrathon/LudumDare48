@@ -20,7 +20,7 @@ public class HexPlayer : MonoBehaviour
     Inventory inventory;
     PlayerAudio playerAudio;
 
-    enum State
+    public enum State
     {
         Ready,
         Moving,
@@ -30,6 +30,9 @@ public class HexPlayer : MonoBehaviour
     State state;
     Vector3 target;
     CustomTile.Interaction queuedInteraction;
+
+    public State CurrentState { get { return state; } }
+    public PlayerAudio CurrentAudio { get { return playerAudio; } }
 
 
     void Start()

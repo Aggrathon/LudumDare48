@@ -6,8 +6,9 @@ using UnityEngine;
 public class PlayerAudio : MonoBehaviour
 {
 
-    public AudioClip[] errorSounds;
-    public AudioClip[] moveSounds;
+    public List<AudioClip> errorSounds;
+    public List<AudioClip> moveSounds;
+    public List<AudioClip> alertSounds;
 
     AudioSource audioSource;
 
@@ -20,12 +21,18 @@ public class PlayerAudio : MonoBehaviour
     public void PlayError()
     {
         audioSource.pitch = Random.Range(0.9f, 1.1f);
-        audioSource.PlayOneShot(errorSounds[Random.Range(0, errorSounds.Length)]);
+        audioSource.PlayOneShot(errorSounds.Sample());
     }
 
     public void PlaySteps()
     {
         audioSource.pitch = Random.Range(0.9f, 1.1f);
-        audioSource.PlayOneShot(moveSounds[Random.Range(0, moveSounds.Length)]);
+        audioSource.PlayOneShot(moveSounds.Sample());
+    }
+
+    public void PlayAlert()
+    {
+        audioSource.pitch = Random.Range(0.9f, 1.1f);
+        audioSource.PlayOneShot(alertSounds.Sample());
     }
 }

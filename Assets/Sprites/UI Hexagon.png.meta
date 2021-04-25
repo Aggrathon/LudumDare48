@@ -4,7 +4,7 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 2747690628134850419
-    second: Hexagon Flat-Top
+    second: HexUI
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -44,7 +44,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -130,16 +130,16 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Hexagon Flat-Top
+      name: HexUI
       rect:
         serializedVersion: 2
-        x: 0
-        y: 15
-        width: 256
-        height: 226
+        x: 2
+        y: 16
+        width: 252
+        height: 222
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 128, y: 0, z: 124, w: 0}
       outline:
       - - {x: -65, y: 113}
         - {x: -128, y: 4}

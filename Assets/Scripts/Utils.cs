@@ -16,4 +16,9 @@ static class MyExtensions
             list[n] = value;
         }
     }
+
+    public static T Sample<T>(this IList<T> list)
+    {
+        return list[Random.Range(0, list.Count)];
+    }
 }
