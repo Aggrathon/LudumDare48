@@ -126,9 +126,33 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Keep to yourself", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Fields:
-                AddOption("Continue Exploring", true, player.GiveControl);
+                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { player.CurrentInventory.food.Refill(2); player.GiveControl(); });
+                AddOption("Rest, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { player.CurrentInventory.energy.value += 2; player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Forest:
+                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { player.CurrentInventory.food.Refill(2); player.GiveControl(); });
+                AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 5<sprite name=Food>", player.CurrentInventory.bow.value > 1, () =>
+                {
+                    player.CurrentInventory.food.Refill(5);
+                    player.CurrentInventory.bow.value -= 2;
+                    player.GiveControl();
+                });
+                AddOption("Craft arrows, spend <sprite name=Dagger><sprite name=Dagger> to gain 5<sprite name=Bow>", player.CurrentInventory.dagger.value > 1, () =>
+                {
+                    player.CurrentInventory.dagger.value -= 2;
+                    player.CurrentInventory.bow.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption(
+                    "Craft arrows, spend <sprite name=Dagger><sprite name=Axe> to gain 5<sprite name=Bow>",
+                    player.CurrentInventory.dagger.value > 0 && player.CurrentInventory.axe.value > 0,
+                    () =>
+                    {
+                        player.CurrentInventory.dagger.value--;
+                        player.CurrentInventory.axe.value--;
+                        player.CurrentInventory.bow.Refill(5);
+                        player.GiveControl();
+                    });
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.OldGrowth:
@@ -147,6 +171,36 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Continue Exploring", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Settlement:
+                AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                {
+                    player.CurrentInventory.gold.value--;
+                    player.CurrentInventory.food.Refill(5);
+                    player.GiveControl();
+                });
+                AddOption("Buy 12<sprite name=Food> for <sprite name=Gold><sprite name=Gold>", player.CurrentInventory.gold.value > 1, () =>
+                {
+                    player.CurrentInventory.gold.value -= 2;
+                    player.CurrentInventory.food.Refill(12);
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Bow> for 4<sprite name=Gold>", player.CurrentInventory.gold.value > 3, () =>
+                {
+                    player.CurrentInventory.gold.value -= 4;
+                    player.CurrentInventory.bow.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy <sprite name=Dagger> for 3<sprite name=Gold>", player.CurrentInventory.gold.value > 2, () =>
+                {
+                    player.CurrentInventory.gold.value -= 3;
+                    player.CurrentInventory.dagger.Refill();
+                    player.GiveControl();
+                });
+                AddOption("Buy a map (<sprite name=Time><sprite name=Time>) for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                {
+                    player.CurrentInventory.gold.value--;
+                    player.CurrentInventory.time += 2;
+                    player.GiveControl();
+                });
                 AddOption("Leave", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.LoggingCamp:

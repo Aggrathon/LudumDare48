@@ -58,12 +58,12 @@ public class HexPlayer : MonoBehaviour
                 if (queuedInteraction.interaction != CustomTile.Interaction.None)
                 {
                     InteractWithTile(queuedInteraction);
-                    queuedInteraction = new CustomTile.TileInfo();
+                    queuedInteraction.interaction = CustomTile.Interaction.None;
                 }
                 else
                 {
-                    ShowMoveButtons();
-                    state = State.Ready;
+                    state = State.Waiting;
+                    GiveControl();
                 }
             }
             else
@@ -96,11 +96,13 @@ public class HexPlayer : MonoBehaviour
                 playerAudio.PlaySteps();
                 inventory.energy.value -= ti.energy;
                 inventory.food.value -= ti.food;
-                queuedInteraction = Random.value < ti.encounterChance ? ti : new CustomTile.TileInfo();
+                queuedInteraction = Random.value < ti.encounterChance ? ti : queuedInteraction;
+                inventory.UpdateUI();
             }
             else
             {
                 playerAudio.PlayError();
+                GiveControl();
             }
         }
         else
@@ -109,14 +111,6 @@ public class HexPlayer : MonoBehaviour
             inventory.food.value -= ti.food;
             inventory.energy.Refill();
             InteractWithTile(ti);
-        }
-        if (inventory.CheckDead())
-        {
-            state = State.Waiting;
-            HideMoveButtons();
-        }
-        else
-        {
             inventory.UpdateUI();
         }
     }
