@@ -24,6 +24,7 @@ public class InteractionUI : MonoBehaviour
 
     public void ClearOptions(string title)
     {
+        gameObject.SetActive(false);
         for (int i = 0; i < options.childCount; i++)
         {
             options.GetChild(i).gameObject.SetActive(false);
@@ -47,15 +48,14 @@ public class InteractionUI : MonoBehaviour
         var button = tr.GetComponent<Button>();
         button.interactable = enabled;
         button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(callback);
         button.onClick.AddListener(Hide);
+        button.onClick.AddListener(callback);
         var text = tr.GetChild(0).GetComponent<TextMeshProUGUI>().text = description;
         tr.gameObject.SetActive(true);
     }
 
     public void StartEncounter(HexPlayer player, CustomTile.TileInfo ti)
     {
-        Hide();
         ClearOptions(ti.GetTitle());
         switch (ti.interaction)
         {
@@ -63,6 +63,66 @@ public class InteractionUI : MonoBehaviour
                 player.GiveControl();
                 return;
             case CustomTile.Interaction.Road:
+                AddOption("Greet strangers", true, () =>
+                {
+                    switch (Random.Range(0, 4))
+                    {
+                        case 0:
+                            ClearOptions("Strangers");
+                            AddOption("They ignore you", true, player.GiveControl);
+                            break;
+                        case 1:
+                            ClearOptions("Strangers");
+                            AddOption("You tell them about your adventure and they give you <sprite name=Food><sprite name=Food><sprite name=Food>", true, () =>
+                            {
+                                player.CurrentInventory.food.Refill(3);
+                                player.GiveControl();
+                            });
+                            break;
+                        case 2:
+                            ClearOptions("Strangers");
+                            AddOption("They offer to trade 5<sprite name=Food> for a <sprite name=Gold>", player.CurrentInventory.gold.value > 0, () =>
+                            {
+                                player.CurrentInventory.gold.value--;
+                                player.CurrentInventory.food.Refill(5);
+                                player.GiveControl();
+                            });
+                            AddOption("Decline", true, player.GiveControl);
+                            break;
+                        case 3:
+                            ClearOptions("Robbers");
+                            AddOption("They demand half your <sprite name=Gold>", true, () =>
+                            {
+                                player.CurrentInventory.gold.value /= 2;
+                                player.GiveControl();
+                            });
+                            AddOption("Try to fight them, loose <sprite name=Health><sprite name=Health>", true, () =>
+                            {
+                                player.CurrentInventory.health.value -= 2;
+                                player.GiveControl();
+                            });
+                            AddOption("Try to fight them with your <sprite name=Bow>, loose <sprite name=Health>", player.CurrentInventory.bow.value > 0, () =>
+                            {
+                                player.CurrentInventory.health.value -= 1;
+                                player.CurrentInventory.bow.value -= 1;
+                                player.GiveControl();
+                            });
+                            AddOption("Try to fight them with your <sprite name=Dagger>, loose <sprite name=Health>", player.CurrentInventory.dagger.value > 0, () =>
+                            {
+                                player.CurrentInventory.health.value -= 1;
+                                player.CurrentInventory.dagger.value -= 1;
+                                player.GiveControl();
+                            });
+                            AddOption("Try to fight them with your <sprite name=Axe>, loose <sprite name=Health>", player.CurrentInventory.axe.value > 0, () =>
+                            {
+                                player.CurrentInventory.health.value -= 1;
+                                player.CurrentInventory.axe.value -= 1;
+                                player.GiveControl();
+                            });
+                            break;
+                    }
+                    Show();
+                });
                 AddOption("Keep to yourself", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Fields:
