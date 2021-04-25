@@ -6,8 +6,8 @@ using TMPro;
 public class Inventory : MonoBehaviour
 {
 
-    [SerializeField] Transform ui;
-    [SerializeField] Outro outro;
+    public Transform ui;
+    public Outro outro;
 
     [System.Serializable]
     public struct Capacity

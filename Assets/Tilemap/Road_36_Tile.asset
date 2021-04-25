@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c98c897094e52942b3abcf28af4f0d3, type: 3}
-  m_Name: Road_Clearing_36_Tile
+  m_Name: Road_36_Tile
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300000, guid: c361f1efff0258144a18db41fe4fc560, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -37,3 +37,4 @@ MonoBehaviour:
   food: 0
   energy: -1
   interaction: 1
+  encounterChance: 0.1

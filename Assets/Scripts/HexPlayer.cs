@@ -13,6 +13,7 @@ public class HexPlayer : MonoBehaviour
     public MoveButton moveLeftButton;
     public MoveButton moveRightButton;
     public MoveButton moveStayButton;
+    public InteractionUI interactionUI;
 
     public float speed = 3.0f;
 
@@ -29,10 +30,11 @@ public class HexPlayer : MonoBehaviour
 
     State state;
     Vector3 target;
-    CustomTile.Interaction queuedInteraction;
+    CustomTile.TileInfo queuedInteraction;
 
     public State CurrentState { get { return state; } }
     public PlayerAudio CurrentAudio { get { return playerAudio; } }
+    public Inventory CurrentInventory { get { return inventory; } }
 
 
     void Start()
@@ -41,7 +43,7 @@ public class HexPlayer : MonoBehaviour
         playerAudio = GetComponent<PlayerAudio>();
         SnapToTile();
         state = State.Waiting;
-        queuedInteraction = CustomTile.Interaction.None;
+        queuedInteraction = new CustomTile.TileInfo();
     }
 
     private void Update()
@@ -53,10 +55,10 @@ public class HexPlayer : MonoBehaviour
             if (move.sqrMagnitude < dist * dist)
             {
                 transform.position = target;
-                if (queuedInteraction != CustomTile.Interaction.None)
+                if (queuedInteraction.interaction != CustomTile.Interaction.None)
                 {
                     InteractWithTile(queuedInteraction);
-                    queuedInteraction = CustomTile.Interaction.None;
+                    queuedInteraction = new CustomTile.TileInfo();
                 }
                 else
                 {
@@ -94,7 +96,7 @@ public class HexPlayer : MonoBehaviour
                 playerAudio.PlaySteps();
                 inventory.energy.value -= ti.energy;
                 inventory.food.value -= ti.food;
-                queuedInteraction = Random.value < ti.encounterChance ? ti.interaction : CustomTile.Interaction.None;
+                queuedInteraction = Random.value < ti.encounterChance ? ti : new CustomTile.TileInfo();
             }
             else
             {
@@ -106,29 +108,40 @@ public class HexPlayer : MonoBehaviour
             inventory.time--;
             inventory.food.value -= ti.food;
             inventory.energy.Refill();
-            InteractWithTile(ti.interaction);
+            InteractWithTile(ti);
         }
         if (inventory.CheckDead())
         {
             state = State.Waiting;
             HideMoveButtons();
         }
-        inventory.UpdateUI();
+        else
+        {
+            inventory.UpdateUI();
+        }
     }
 
-    void InteractWithTile(CustomTile.Interaction interaction)
+    void InteractWithTile(CustomTile.TileInfo ti)
     {
         HideMoveButtons();
         state = State.Waiting;
-        // TODO: Handle Interaction
-        GiveControl();
+        interactionUI.StartEncounter(this, ti);
     }
 
     public void GiveControl()
     {
         if (state == State.Waiting)
             state = State.Ready;
-        ShowMoveButtons();
+        if (inventory.CheckDead())
+        {
+            state = State.Waiting;
+            HideMoveButtons();
+        }
+        else
+        {
+            inventory.UpdateUI();
+            ShowMoveButtons();
+        }
     }
 
     void ShowMoveButtons()

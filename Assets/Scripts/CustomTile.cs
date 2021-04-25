@@ -46,6 +46,14 @@ public class CustomTile : Tile
             encounterChance = ct.encounterChance;
         }
 
+        // public TileInfo()
+        // {
+        //     energy = 0;
+        //     food = 0;
+        //     interaction = Interaction.None;
+        //     encounterChance = 0f;
+        // }
+
         public string GetTitle()
         {
             return interaction switch
@@ -64,6 +72,7 @@ public class CustomTile : Tile
                 Interaction.ElfVillage => "Elven Village",
                 Interaction.DwarfMine => "Dwarwen Mine",
                 Interaction.Flee => "Village",
+                _ => throw new System.Exception("Missing switch statement")
             };
         }
 
