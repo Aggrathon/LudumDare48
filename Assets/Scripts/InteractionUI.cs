@@ -395,10 +395,7 @@ public class InteractionUI : MonoBehaviour
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Snow:
-                inventory.outro.Show(
-                    "<b>Game Completed!</b>\nYou've reached the top of the mountain. That's when it hits you; this is not deep at all, rather the opposite, you are actually very high up!"
-                    + " You can see almost the whole world from here, but not your mother. That means those youngsters must not have told the truth and your honour is saved!\n"
-                    + "<b>Final Score: " + inventory.time.ToString() + "</b>");
+                inventory.outro.ShowGood(inventory.time.ToString());
                 return;
             case CustomTile.Interaction.Settlement:
                 AddOption("Buy 5<sprite name=Food> for a <sprite name=Gold>", inventory.gold.value > 0 && !inventory.food.IsFull(), () =>
@@ -527,7 +524,7 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Leave", true, () => { inventory.food.Consume(1); player.GiveControl(); });
                 break;
             case CustomTile.Interaction.Flee:
-                inventory.outro.Show("<b>Game Over:</b>\n\nYou decided to not explore, and instead just ran away!");
+                inventory.outro.ShowBad("<b>Game Over:</b>\n\nYou decided to not explore, and instead just ran away!");
                 return;
             default:
                 Debug.LogException(new System.Exception("Missing switch statement"));

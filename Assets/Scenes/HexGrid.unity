@@ -6595,12 +6595,12 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: What once was a nice day at "The Locale" (the headquarters / saloon of
-    the society) got completely ruined by a couple of youngsters shouting unthinkable
-    things about your mother. It quickly became too much, so you left the establishment.
-    But in order to save face, you claimed to be going on an expedition deeper into
-    the wilderness than anyone before. To save your honour you now have to follow
-    through with it, there's no going back now...
+  m_text: Sir Gregor McGregor had a nice day at the "Locale" (the headquarters /
+    saloon of the society) until it got completely ruined by a couple of youngsters
+    shouting unthinkable things about his mother. Gregor could not stand such slander,
+    and left the establishment. But in order to save face, he claimed he was leaving
+    because of an expedition that would go deeper into the wilderness than anyone
+    before. However, to save his honour he now had to follow through with it...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
   m_sharedMaterial: {fileID: -1653469401833316664, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
@@ -9295,6 +9295,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   text: {fileID: 1320698366}
   otherUI: {fileID: 2016931102}
+  goodSound: {fileID: 8300000, guid: a5b605ae86be25f41a0c4855dee6bcce, type: 3}
+  badSound: {fileID: 8300000, guid: e3ca9fbef428f044a998ddfe65f6f532, type: 3}
 --- !u!114 &865258965
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -119583,10 +119585,14 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<b>Game Over:</b>
+  m_text: 'Gregor reached the top of the mountain. That''s when it hits him; this
+    is not deep at all, rather the opposite, he is actually very high up! You can
+    see almost the whole world from here, but not Gregors mother. That means those
+    youngsters where lying and Gregors honour is restored!
 
 
-    You ran out of food!'
+    <b>Final Score: 
+    {0}</b>'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
   m_sharedMaterial: {fileID: -1653469401833316664, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
@@ -119730,7 +119736,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1348584993}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.25, y: -8.261, z: 0}
+  m_LocalPosition: {x: -2.25, y: -8.226777, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1449370897}
@@ -121672,7 +121678,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Begin your adventure
+  m_text: Begin the adventure
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
   m_sharedMaterial: {fileID: -1653469401833316664, guid: cd8741aac98a2aa46a8dd8b5612f1243, type: 2}
@@ -122041,7 +122047,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -195}
+  m_AnchoredPosition: {x: 0, y: -200}
   m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2098201124

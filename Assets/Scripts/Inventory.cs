@@ -60,17 +60,17 @@ public class Inventory : MonoBehaviour
     {
         if (health.value <= 0)
         {
-            outro.Show("<b>Game Over:</b>\n\nYou died!");
+            outro.ShowBad("<b>Game Over:</b>\n\nYou died!");
             return true;
         }
         if (food.value < 0)
         {
-            outro.Show("<b>Game Over:</b>\n\nYou ran out of food!");
+            outro.ShowBad("<b>Game Over:</b>\n\nYou ran out of food!");
             return true;
         }
         if (time <= 0)
         {
-            outro.Show("<b>Game Over:</b>\n\nYou took too long, no one remembers you anymore!");
+            outro.ShowBad("<b>Game Over:</b>\n\nYou took too long, no one remembers you anymore!");
             return true;
         }
         return false;
