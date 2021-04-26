@@ -134,7 +134,11 @@ public class InteractionUI : MonoBehaviour
                 AddOption("Keep to yourself", true, player.GiveControl);
                 break;
             case CustomTile.Interaction.Fields:
-                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", true, () => { inventory.food.Refill(2); player.GiveControl(); });
+                if (Random.value < 0.1f)
+                {
+                    AddOption("You meet a sheperd, who offers to share his lunch, gain 4<sprite name=Food>", !inventory.food.IsFull(), () => { inventory.food.Refill(4); player.GiveControl(); });
+                }
+                AddOption("Pick some berries, gain <sprite name=Food><sprite name=Food>", !inventory.food.IsFull(), () => { inventory.food.Refill(2); player.GiveControl(); });
                 AddOption("Rest, gain <sprite name=Energy><sprite name=Energy> extra", true, () => { inventory.energy.value += 2; player.GiveControl(); });
                 if (!inventory.health.IsFull() && !inventory.bandage.IsEmpty())
                     AddOption("Use bandage, spend <sprite name=Bandage> to gain <sprite name=Health><sprite name=Health>", true, () => { inventory.bandage.value--; inventory.health.Refill(2); player.GiveControl(); });
@@ -204,7 +208,7 @@ public class InteractionUI : MonoBehaviour
                 }
                 if (Random.value < 0.1f)
                 {
-                    AddOption("You see an old man wandering alone in the forest", true, () =>
+                    AddOption("You see an old man wandering in the forest", true, () =>
                     {
                         ClearOptions("Meeting a Druid");
                         AddOption("Trade 10<sprite name=Food> for a <sprite name=Bandage>", inventory.food.value > 9 && !inventory.bandage.IsFull(), () =>
@@ -313,6 +317,30 @@ public class InteractionUI : MonoBehaviour
                         player.GiveControl();
                     });
                     break;
+                }
+                if (Random.value < 0.1f)
+                {
+                    AddOption("You see a door on the side of an hill, and knock on it", true, () =>
+                    {
+                        ClearOptions("The shortling");
+                        AddOption("The (very short) owner offers you dinner, gain 5<sprite name=Food>", !inventory.food.IsFull(), () =>
+                        {
+                            inventory.food.Refill(5);
+                            player.GiveControl();
+                        });
+                        AddOption("The (very short) helps you with your wounds, gain <sprite name=Health><sprite name=Health>", !inventory.health.IsFull(), () =>
+                        {
+                            inventory.health.Refill(2);
+                            player.GiveControl();
+                        });
+                        AddOption("The (very short) lends you his sharpening stone, gain <sprite name=Dagger>", !inventory.dagger.IsFull(), () =>
+                        {
+                            inventory.dagger.Refill();
+                            player.GiveControl();
+                        });
+                        AddOption("Let him be", true, player.GiveControl);
+                        Show();
+                    });
                 }
                 AddOption("Hunt for food, spend <sprite name=Bow><sprite name=Bow> to gain 6<sprite name=Food>",
                     inventory.bow.value > 1 && !inventory.food.IsFull(), () =>
